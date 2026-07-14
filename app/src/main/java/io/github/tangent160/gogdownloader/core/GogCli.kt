@@ -14,6 +14,7 @@ import kotlinx.coroutines.withContext
 class GogCli(context: Context) {
 
     private val binary = File(context.applicationInfo.nativeLibraryDir, "libgogdownloader.so")
+    private val proxy = ProxyServer()
     val configDir: File = File(context.filesDir, "gog").apply { mkdirs() }
     private val homeDir: File = context.filesDir
     private val tmpDir: File = context.cacheDir
@@ -23,6 +24,24 @@ class GogCli(context: Context) {
 
     class Result(val exitCode: Int, val output: String) {
         val success: Boolean get() = exitCode == 0
+
+        /**
+         * The actual error from the CLI output. On failure Symfony prints the
+         * exception message, a boxed copy of it, and finally the command
+         * usage synopsis — so "the last line" is useless as an error.
+         */
+        val errorMessage: String
+            get() {
+                // [critical] ... Message: "Failed to log in..."
+                Regex("Message: \"(.+?)\"").find(output)?.let { return it.groupValues[1] }
+                // Fallback: first non-blank line after "In SomeFile.php line 12:"
+                val lines = output.lines()
+                val marker = lines.indexOfFirst { it.trim().matches(Regex("In .+ line \\d+:")) }
+                if (marker >= 0) {
+                    lines.drop(marker + 1).firstOrNull { it.isNotBlank() }?.let { return it.trim() }
+                }
+                return lines.lastOrNull { it.isNotBlank() }?.trim() ?: "gog-downloader failed (exit $exitCode)"
+            }
     }
 
     /**
@@ -34,12 +53,22 @@ class GogCli(context: Context) {
         onLine: (String) -> Unit = {},
         onProcessStarted: (Process) -> Unit = {},
     ): Result = withContext(Dispatchers.IO) {
+        // The static musl binary can't do DNS on Android; route it through the
+        // in-app proxy (see ProxyServer).
+        val proxyUrl = "http://127.0.0.1:${proxy.start()}"
         val process = ProcessBuilder(binary.absolutePath, *args, "--no-interaction")
             .redirectErrorStream(true)
             .apply {
                 environment()["CONFIG_DIRECTORY"] = configDir.absolutePath
                 environment()["HOME"] = homeDir.absolutePath
                 environment()["TMPDIR"] = tmpDir.absolutePath
+                environment()["http_proxy"] = proxyUrl
+                environment()["https_proxy"] = proxyUrl
+                environment()["HTTP_PROXY"] = proxyUrl
+                environment()["HTTPS_PROXY"] = proxyUrl
+                // OpenSSL can't read Android's trust store; give it a PEM
+                // export of the device's trusted CAs (see CaStore).
+                environment()["SSL_CERT_FILE"] = CaStore.pemFile(configDir).absolutePath
             }
             .start()
         onProcessStarted(process)
@@ -52,6 +81,11 @@ class GogCli(context: Context) {
         }
         val exit = process.waitFor()
         Result(exit, output.toString())
+    }
+
+    /** Verifies the in-app proxy can tunnel to GOG (JVM side only). */
+    suspend fun proxySelfTest(): Boolean = withContext(Dispatchers.IO) {
+        proxy.selfTest("api.gog.com")
     }
 
     suspend fun codeLogin(codeOrUrl: String): Result = run("code-login", codeOrUrl)

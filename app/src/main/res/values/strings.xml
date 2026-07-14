@@ -6,6 +6,17 @@
     <string name="save">Save</string>
     <string name="refresh">Refresh library</string>
 
+    <string name="preflight_title">Checking requirements</string>
+    <string name="preflight_internet">Internet permission</string>
+    <string name="preflight_binary">Downloader runs</string>
+    <string name="preflight_proxy">Network tunnel works</string>
+    <string name="preflight_network">Downloader reaches GOG</string>
+    <string name="preflight_notifications">Download notifications</string>
+    <string name="preflight_storage">Storage access (optional)</string>
+    <string name="preflight_grant_notifications">Allow notifications</string>
+    <string name="preflight_storage_note">Optional: only needed to save downloads outside the app folder. You can grant it later in Settings.</string>
+    <string name="preflight_continue">Continue</string>
+
     <string name="login_title">Log in to GOG</string>
     <string name="login_instructions">Tap the button below to open the GOG login page in your browser. After logging in you will land on a blank page — copy its address and paste it here.</string>
     <string name="login_open_browser">Open GOG login page</string>

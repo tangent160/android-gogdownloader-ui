@@ -25,6 +25,7 @@ import androidx.navigation.compose.rememberNavController
 import io.github.tangent160.gogdownloader.ui.GameDetailScreen
 import io.github.tangent160.gogdownloader.ui.LibraryScreen
 import io.github.tangent160.gogdownloader.ui.LoginScreen
+import io.github.tangent160.gogdownloader.ui.PreflightScreen
 import io.github.tangent160.gogdownloader.ui.QueueScreen
 import io.github.tangent160.gogdownloader.ui.SettingsScreen
 import io.github.tangent160.gogdownloader.ui.SyncScreen
@@ -39,7 +40,7 @@ class MainActivity : ComponentActivity() {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     var startDestination by remember { mutableStateOf<String?>(null) }
                     LaunchedEffect(Unit) {
-                        startDestination = if (app.gameDatabase.isLoggedIn()) "sync" else "login"
+                        startDestination = if (app.gameDatabase.isLoggedIn()) "sync" else "preflight"
                     }
                     when (val start = startDestination) {
                         null -> Box(
@@ -59,6 +60,13 @@ class MainActivity : ComponentActivity() {
 private fun AppNavHost(startDestination: String) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = startDestination) {
+        composable("preflight") {
+            PreflightScreen(
+                onReady = {
+                    navController.navigate("login") { popUpTo("preflight") { inclusive = true } }
+                },
+            )
+        }
         composable("login") {
             LoginScreen(
                 onLoggedIn = {

@@ -31,9 +31,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
             stateFlow.value = when {
                 result == null -> LoginState.Error("Failed to run gog-downloader")
                 result.success -> LoginState.Success
-                else -> LoginState.Error(
-                    result.output.lines().lastOrNull { it.isNotBlank() } ?: "Login failed",
-                )
+                else -> LoginState.Error(result.errorMessage)
             }
         }
     }

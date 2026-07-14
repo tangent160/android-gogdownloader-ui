@@ -40,9 +40,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
             stateFlow.value = when {
                 result == null -> SyncState.Error("Failed to run gog-downloader")
                 result.success -> SyncState.Done
-                else -> SyncState.Error(
-                    result.output.lines().lastOrNull { it.isNotBlank() } ?: "update-database failed",
-                )
+                else -> SyncState.Error(result.errorMessage)
             }
         }
     }
