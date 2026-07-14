@@ -24,6 +24,15 @@
     <string name="login_submit">Log in</string>
 
     <string name="sync_running">Updating game database…</string>
+    <string name="sync_channel_name">Library sync</string>
+    <string name="sync_progress">%1$d of %2$d games</string>
+
+    <string name="sync_choice_title">Add your games</string>
+    <string name="sync_choice_search_explanation">Search for specific games to add to your library view, or fetch your whole library. You can always add more later from Settings.</string>
+    <string name="sync_choice_search_hint">Search your GOG library</string>
+    <string name="sync_choice_search">Search update</string>
+    <string name="sync_choice_full_explanation">A full update fetches details for every game you own. It can take a long time on large libraries.</string>
+    <string name="sync_choice_full">Full update</string>
     <string name="sync_failed">Updating the game database failed</string>
     <string name="sync_skip">Continue with existing data</string>
 
@@ -57,4 +66,9 @@
     <string name="settings_storage_granted">Storage access granted. Downloads can be saved anywhere on shared storage.</string>
     <string name="settings_storage_explanation">To save downloads outside the app folder, grant access to all files. Without it, downloads only work in the app-specific folder.</string>
     <string name="settings_storage_grant">Grant storage access</string>
+    <string name="settings_library_title">Library</string>
+    <string name="settings_incremental_explanation">Check for updates fetches games that are new or that GOG marks as updated (update-database --updated-only). Note: any owned game missing from the local database counts as new.</string>
+    <string name="settings_incremental_sync">Check for updates</string>
+    <string name="settings_full_resync_explanation">A full re-sync re-downloads details for every game in your library and can take a long time.</string>
+    <string name="settings_full_resync">Full re-sync</string>
 </resources>

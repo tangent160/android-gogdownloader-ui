@@ -46,6 +46,9 @@ import io.github.tangent160.gogdownloader.R
 @Composable
 fun SettingsScreen(
     onBack: () -> Unit,
+    onFullResync: () -> Unit,
+    onIncrementalSync: () -> Unit,
+    onSearchSync: (String) -> Unit,
     viewModel: SettingsViewModel = viewModel(),
 ) {
     val context = LocalContext.current
@@ -154,6 +157,46 @@ fun SettingsScreen(
                 ) {
                     Text(stringResource(R.string.settings_storage_grant))
                 }
+            }
+
+            Text(
+                text = stringResource(R.string.settings_library_title),
+                style = MaterialTheme.typography.titleMedium,
+            )
+            var searchQuery by remember { mutableStateOf("") }
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                label = { Text(stringResource(R.string.sync_choice_search_hint)) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+            )
+            OutlinedButton(
+                onClick = { onSearchSync(searchQuery.trim()) },
+                enabled = searchQuery.isNotBlank(),
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(stringResource(R.string.sync_choice_search))
+            }
+            Text(
+                text = stringResource(R.string.settings_incremental_explanation),
+                style = MaterialTheme.typography.bodySmall,
+            )
+            OutlinedButton(
+                onClick = onIncrementalSync,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(stringResource(R.string.settings_incremental_sync))
+            }
+            Text(
+                text = stringResource(R.string.settings_full_resync_explanation),
+                style = MaterialTheme.typography.bodySmall,
+            )
+            OutlinedButton(
+                onClick = onFullResync,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(stringResource(R.string.settings_full_resync))
             }
         }
     }

@@ -53,6 +53,18 @@ class DownloadService : Service() {
 
     private suspend fun drainQueue() {
         val cli = (application as GogApp).gogCli
+        val wakeLock = getSystemService(android.os.PowerManager::class.java)
+            .newWakeLock(android.os.PowerManager.PARTIAL_WAKE_LOCK, "gogdownloader:download")
+        wakeLock.acquire(12 * 60 * 60 * 1000L)
+        try {
+            drainQueueLocked(cli)
+        } finally {
+            if (wakeLock.isHeld) wakeLock.release()
+            stopSelf()
+        }
+    }
+
+    private suspend fun drainQueueLocked(cli: io.github.tangent160.gogdownloader.core.GogCli) {
         while (true) {
             val job = DownloadQueue.nextQueued() ?: break
             DownloadQueue.update(job.id, state = JobState.RUNNING)
@@ -88,7 +100,6 @@ class DownloadService : Service() {
                 state = if (result?.success == true) JobState.DONE else JobState.FAILED,
             )
         }
-        stopSelf()
     }
 
     private fun createChannel() {

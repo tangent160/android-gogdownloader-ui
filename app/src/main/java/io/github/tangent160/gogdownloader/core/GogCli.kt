@@ -72,11 +72,28 @@ class GogCli(context: Context) {
             }
             .start()
         onProcessStarted(process)
+        // Split on \r as well as \n: the CLI redraws progress bars with bare
+        // carriage returns, which would otherwise only surface at process exit.
         val output = StringBuilder()
-        process.inputStream.bufferedReader().useLines { lines ->
-            lines.forEach { line ->
+        process.inputStream.bufferedReader().use { reader ->
+            val line = StringBuilder()
+            while (true) {
+                val c = reader.read()
+                if (c == -1) break
+                when (c.toChar()) {
+                    '\n', '\r' -> {
+                        if (line.isNotEmpty()) {
+                            output.appendLine(line)
+                            onLine(line.toString())
+                            line.setLength(0)
+                        }
+                    }
+                    else -> line.append(c.toChar())
+                }
+            }
+            if (line.isNotEmpty()) {
                 output.appendLine(line)
-                onLine(line)
+                onLine(line.toString())
             }
         }
         val exit = process.waitFor()
@@ -90,6 +107,15 @@ class GogCli(context: Context) {
 
     suspend fun codeLogin(codeOrUrl: String): Result = run("code-login", codeOrUrl)
 
-    suspend fun updateDatabase(onLine: (String) -> Unit): Result =
-        run("update-database", onLine = onLine)
+    /**
+     * Updates the games database. A [SyncMode.Full] sync makes one API request
+     * per owned game and can take a long time on large libraries;
+     * [SyncMode.Incremental] (--updated-only) also matches games not yet in
+     * the local database.
+     */
+    suspend fun updateDatabase(mode: SyncMode, onLine: (String) -> Unit): Result = when (mode) {
+        is SyncMode.Full -> run("update-database", onLine = onLine)
+        is SyncMode.Incremental -> run("update-database", "--updated-only", onLine = onLine)
+        is SyncMode.Search -> run("update-database", "--search=${mode.query}", onLine = onLine)
+    }
 }

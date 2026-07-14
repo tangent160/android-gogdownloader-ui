@@ -45,6 +45,7 @@ fun LibraryScreen(
     onGameClick: (Long) -> Unit,
     onSettingsClick: () -> Unit,
     onQueueClick: () -> Unit,
+    onRefresh: () -> Unit,
     viewModel: LibraryViewModel = viewModel(),
 ) {
     val state by viewModel.state.collectAsState()
@@ -54,7 +55,7 @@ fun LibraryScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.library_title)) },
                 actions = {
-                    IconButton(onClick = { viewModel.refresh() }) {
+                    IconButton(onClick = onRefresh) {
                         Icon(Icons.Filled.Refresh, contentDescription = stringResource(R.string.refresh))
                     }
                     IconButton(onClick = onQueueClick) {

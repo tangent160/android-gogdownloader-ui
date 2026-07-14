@@ -28,4 +28,27 @@ class Settings(private val context: Context) {
     suspend fun setDownloadDir(path: String) {
         context.dataStore.edit { prefs -> prefs[downloadDirKey] = path }
     }
+
+    private val librarySyncModeKey = stringPreferencesKey("library_sync_mode")
+
+    /**
+     * How the library was populated: [SYNC_MODE_FULL] or [SYNC_MODE_SEARCH].
+     * In search mode automatic refreshes must not run `--updated-only`,
+     * because it would fetch every game missing from the local database —
+     * effectively a full update the user never asked for.
+     */
+    val librarySyncMode: Flow<String> = context.dataStore.data.map { prefs ->
+        prefs[librarySyncModeKey] ?: SYNC_MODE_FULL
+    }
+
+    suspend fun currentLibrarySyncMode(): String = librarySyncMode.first()
+
+    suspend fun setLibrarySyncMode(mode: String) {
+        context.dataStore.edit { prefs -> prefs[librarySyncModeKey] = mode }
+    }
+
+    companion object {
+        const val SYNC_MODE_FULL = "full"
+        const val SYNC_MODE_SEARCH = "search"
+    }
 }
