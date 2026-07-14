@@ -1,2 +1,55 @@
 # android-gogdownloader-ui
-An android ui for gogdownloader
+
+An Android front-end for [RikudouSage/GogDownloader](https://github.com/RikudouSage/GogDownloader).
+The app bundles a self-executing static PHP build of gog-downloader and drives
+it as a native process — browsing your library visually, and delegating login,
+database updates, and downloads (with hash verification and resume) to the CLI.
+
+- **minSdk**: 26 (Android 8.0) · **targetSdk**: 36 (Android 16)
+- **ABIs**: arm64-v8a (devices), x86_64 (emulator)
+
+## How it works
+
+- `vendor/GogDownloader/` is the upstream source (MIT), included as a
+  git submodule pinned to v1.15.1. Update with
+  `git -C vendor/GogDownloader fetch --tags && git -C vendor/GogDownloader checkout <tag>`,
+  then commit the new submodule revision.
+- `php-build/build.sh` downloads the official prebuilt static PHP 8.4 runtime
+  from [static-php-cli](https://github.com/crazywhalecc/static-php-cli) (MIT),
+  builds the gog-downloader phar with composer + phar-composer, strips the
+  phar's shebang, re-signs it, and concatenates it with `micro.sfx` into
+  `app/src/main/jniLibs/<abi>/libgogdownloader.so`.
+- Packaging the binary as a "native library" is what makes it executable on
+  modern Android: binaries shipped inside the APK may be exec'd, while
+  user-supplied binaries in app storage may not (API 29+).
+- The app reads gog-downloader's own SQLite database directly for the game
+  list and download options, and fetches cover art from the public GOG
+  products API.
+
+## Building
+
+```sh
+git submodule update --init   # after cloning
+./php-build/build.sh      # build the bundled gog-downloader binaries (once)
+./gradlew :app:assembleDebug
+```
+
+The APK lands in `app/build/outputs/apk/debug/app-debug.apk`.
+
+## Usage flow
+
+1. **Login** — the app opens GOG's code-login page in your browser; after
+   logging in you land on a blank page. Copy its address, paste it into the
+   app, and it runs `code-login` for you.
+2. **Sync** — the app runs `update-database` to fetch your library.
+3. **Library** — a grid of game covers. Tap a game to see its installers and
+   extras, select what you want, and hit download.
+4. Downloads run in a foreground service via the CLI's `download` command
+   (`--only=<game>` plus `--skip-download` for unselected files), saved to the
+   folder chosen in Settings. Saving outside the app folder requires the
+   all-files-access permission (the downloader is a native process and cannot
+   use SAF).
+
+## License
+
+GPL-3.0 (this app). The vendored GogDownloader and static-php-cli are MIT.

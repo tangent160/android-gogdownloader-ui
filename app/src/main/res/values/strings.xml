@@ -1,0 +1,49 @@
+<resources>
+    <string name="app_name">GOG Downloader</string>
+
+    <string name="back">Back</string>
+    <string name="retry">Retry</string>
+    <string name="save">Save</string>
+    <string name="refresh">Refresh library</string>
+
+    <string name="login_title">Log in to GOG</string>
+    <string name="login_instructions">Tap the button below to open the GOG login page in your browser. After logging in you will land on a blank page — copy its address and paste it here.</string>
+    <string name="login_open_browser">Open GOG login page</string>
+    <string name="login_paste_hint">Paste the address or code here</string>
+    <string name="login_submit">Log in</string>
+
+    <string name="sync_running">Updating game database…</string>
+    <string name="sync_failed">Updating the game database failed</string>
+    <string name="sync_skip">Continue with existing data</string>
+
+    <string name="library_title">Your games</string>
+    <string name="library_empty">No games found. Try refreshing the library.</string>
+
+    <string name="detail_installers">Installers</string>
+    <string name="detail_include_extras">Include extras</string>
+    <string name="detail_extras_count">%1$d extra files (artwork, soundtracks, manuals…)</string>
+    <string name="detail_no_files">This game has no downloadable files. Try refreshing the library.</string>
+    <string name="detail_download_selected">Download selected (%1$d)</string>
+
+    <string name="queue_title">Downloads</string>
+    <string name="queue_empty">No downloads yet.</string>
+    <string name="queue_clear">Clear finished</string>
+    <string name="queue_state_queued">Queued</string>
+    <string name="queue_state_running">Downloading…</string>
+    <string name="queue_state_done">Done</string>
+    <string name="queue_state_failed">Failed</string>
+    <string name="queue_state_cancelled">Cancelled</string>
+
+    <string name="download_channel_name">Downloads</string>
+    <string name="download_preparing">Preparing download…</string>
+    <string name="download_running">Downloading %1$s</string>
+
+    <string name="settings_title">Settings</string>
+    <string name="settings_download_dir">Download folder</string>
+    <string name="settings_download_dir_hint">Folder path</string>
+    <string name="settings_pick_folder">Choose folder…</string>
+    <string name="settings_storage_title">Storage access</string>
+    <string name="settings_storage_granted">Storage access granted. Downloads can be saved anywhere on shared storage.</string>
+    <string name="settings_storage_explanation">To save downloads outside the app folder, grant access to all files. Without it, downloads only work in the app-specific folder.</string>
+    <string name="settings_storage_grant">Grant storage access</string>
+</resources>

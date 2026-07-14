@@ -1,0 +1,12 @@
+# Build outputs
+/php-build/cache/
+/php-build/out/
+/app/src/main/jniLibs/
+/app/build/
+/build/
+.gradle/
+local.properties
+
+# IDE
+.idea/
+*.iml
