@@ -47,7 +47,21 @@ class Settings(private val context: Context) {
         context.dataStore.edit { prefs -> prefs[librarySyncModeKey] = mode }
     }
 
+    private val librarySortKey = stringPreferencesKey("library_sort")
+
+    /** Library grid sort order, stored as a LibrarySort enum name. */
+    val librarySort: Flow<String> = context.dataStore.data.map { prefs ->
+        prefs[librarySortKey] ?: SORT_TITLE_ASC
+    }
+
+    suspend fun currentLibrarySort(): String = librarySort.first()
+
+    suspend fun setLibrarySort(sort: String) {
+        context.dataStore.edit { prefs -> prefs[librarySortKey] = sort }
+    }
+
     companion object {
+        const val SORT_TITLE_ASC = "TITLE_ASC"
         const val SYNC_MODE_FULL = "full"
         const val SYNC_MODE_SEARCH = "search"
     }

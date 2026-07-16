@@ -80,6 +80,8 @@ class DownloadService : Service() {
                     add("--skip-existing-extras")
                 }
                 if (!job.includeInstallers) add("--no-games")
+                job.platforms.forEach { add("--os=$it") }
+                job.languages.forEach { add("--language=$it") }
                 job.skippedNames.forEach { add("--skip-download=$it") }
             }
 

@@ -4,6 +4,7 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
@@ -17,7 +18,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.Box
@@ -40,6 +43,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         val app = application as GogApp
         setContent {
             AppTheme {
@@ -84,9 +88,16 @@ private fun AppNavHost(app: GogApp, startDestination: String) {
             )
         }
         composable("login") {
+            val scope = rememberCoroutineScope()
             LoginScreen(
                 onLoggedIn = {
                     navController.navigate("syncchoice") { popUpTo("login") { inclusive = true } }
+                },
+                onImported = {
+                    scope.launch {
+                        val target = if (app.gameDatabase.games().isEmpty()) "syncchoice" else "library"
+                        navController.navigate(target) { popUpTo(0) { inclusive = true } }
+                    }
                 },
             )
         }

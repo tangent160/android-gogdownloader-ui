@@ -10,6 +10,8 @@ data class Game(
     val gogId: Long,
     val title: String,
     val slug: String?,
+    /** Sum of every installer variant's size — overstates any one install; used as a sort key. */
+    val totalSizeBytes: Long = 0,
 )
 
 data class DownloadFile(
@@ -54,7 +56,11 @@ class GameDatabase(private val databaseFile: File) {
     suspend fun games(): List<Game> = withContext(Dispatchers.IO) {
         query { db ->
             db.rawQuery(
-                "select id, game_id, title, slug from games order by title collate nocase",
+                """
+                select g.id, g.game_id, g.title, g.slug, coalesce(sum(d.size), 0)
+                from games g left join downloads d on d.game_id = g.id
+                group by g.id order by g.title collate nocase
+                """.trimIndent(),
                 null,
             ).use { cursor ->
                 buildList {
@@ -65,6 +71,7 @@ class GameDatabase(private val databaseFile: File) {
                                 gogId = cursor.getLong(1),
                                 title = cursor.getString(2),
                                 slug = if (cursor.isNull(3)) null else cursor.getString(3),
+                                totalSizeBytes = cursor.getDouble(4).toLong(),
                             )
                         )
                     }

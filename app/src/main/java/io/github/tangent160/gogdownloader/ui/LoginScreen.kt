@@ -1,10 +1,15 @@
 package io.github.tangent160.gogdownloader.ui
 
 import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.net.toUri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -38,20 +43,32 @@ private const val AUTH_URL =
 @Composable
 fun LoginScreen(
     onLoggedIn: () -> Unit,
+    onImported: () -> Unit,
     viewModel: LoginViewModel = viewModel(),
 ) {
     val context = LocalContext.current
     val state by viewModel.state.collectAsState()
     var pastedUrl by rememberSaveable { mutableStateOf("") }
 
+    val importPicker = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument(),
+    ) { uri ->
+        uri?.let { viewModel.importBackup(it) }
+    }
+
     if (state is LoginState.Success) {
         onLoggedIn()
+        return
+    }
+    if (state is LoginState.Imported) {
+        onImported()
         return
     }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .windowInsetsPadding(WindowInsets.safeDrawing)
             .verticalScroll(rememberScrollState())
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -94,6 +111,17 @@ fun LoginScreen(
             enabled = pastedUrl.isNotBlank() && state !is LoginState.Working,
         ) {
             Text(stringResource(R.string.login_submit))
+        }
+        Text(
+            text = stringResource(R.string.login_import_explanation),
+            style = MaterialTheme.typography.bodySmall,
+        )
+        OutlinedButton(
+            onClick = { importPicker.launch(arrayOf("*/*")) },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = state !is LoginState.Working,
+        ) {
+            Text(stringResource(R.string.login_import_button))
         }
     }
 }

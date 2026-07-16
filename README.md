@@ -25,6 +25,9 @@ database updates, and downloads (with hash verification and resume) to the CLI.
 - The app reads gog-downloader's own SQLite database directly for the game
   list and download options, and fetches cover art from the public GOG
   products API.
+- The UI is edge-to-edge with proper inset handling, so content stays clear
+  of the status bar / camera cutout and the navigation bar in both portrait
+  and landscape.
 
 ## Building
 
@@ -40,15 +43,24 @@ The APK lands in `app/build/outputs/apk/debug/app-debug.apk`.
 
 1. **Login** — the app opens GOG's code-login page in your browser; after
    logging in you land on a blank page. Copy its address, paste it into the
-   app, and it runs `code-login` for you.
+   app, and it runs `code-login` for you. Alternatively, import a database
+   backup exported from another install to skip logging in.
 2. **Sync** — the app runs `update-database` to fetch your library.
-3. **Library** — a grid of game covers. Tap a game to see its installers and
-   extras, select what you want, and hit download.
+3. **Library** — a grid of game covers, searchable from the app bar and
+   sortable by title, recently added, or total size (the sort choice is
+   remembered). Tap a game to see its installers and
+   extras, select what you want, and hit download. Installers are grouped by
+   name (GOG reuses one name across platform/language variants); filter chips
+   narrow a multi-platform or multi-language game to just the variants you want.
 4. Downloads run in a foreground service via the CLI's `download` command
-   (`--only=<game>` plus `--skip-download` for unselected files), saved to the
+   (`--only=<game>`, `--skip-download` for unselected installers, and
+   `--os`/`--language` for the active filter chips), saved to the
    folder chosen in Settings. Saving outside the app folder requires the
    all-files-access permission (the downloader is a native process and cannot
    use SAF).
+5. **Backup** — Settings can export/import gog-downloader's database
+   (a single SQLite file holding your login tokens and synced library), so you
+   can move to a new device or restore after a reinstall without re-syncing.
 
 ## License
 

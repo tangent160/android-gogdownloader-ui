@@ -14,6 +14,10 @@ data class DownloadJob(
     /** Whether any installers were selected at all. */
     val includeInstallers: Boolean,
     val includeExtras: Boolean,
+    /** Platform filter passed as --os; empty means all platforms. */
+    val platforms: List<String>,
+    /** Language filter passed as --language; empty means all languages. */
+    val languages: List<String>,
     val targetDir: String,
 )
 
@@ -38,6 +42,8 @@ object DownloadQueue {
         skippedNames: List<String>,
         includeInstallers: Boolean,
         includeExtras: Boolean,
+        platforms: List<String> = emptyList(),
+        languages: List<String> = emptyList(),
         targetDir: String,
     ): DownloadJob {
         val job = DownloadJob(
@@ -46,6 +52,8 @@ object DownloadQueue {
             skippedNames = skippedNames,
             includeInstallers = includeInstallers,
             includeExtras = includeExtras,
+            platforms = platforms,
+            languages = languages,
             targetDir = targetDir,
         )
         statusesFlow.update { it + JobStatus(job) }

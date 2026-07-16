@@ -5,7 +5,10 @@ import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +21,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -84,18 +88,28 @@ fun GameDetailScreen(
 
             is GameDetailState.Loaded -> Column(modifier = Modifier.fillMaxSize().padding(padding)) {
                 LazyColumn(modifier = Modifier.weight(1f)) {
-                    if (s.downloads.isNotEmpty()) {
+                    if (s.groups.isNotEmpty()) {
                         item {
                             SectionHeader(stringResource(R.string.detail_installers))
                         }
-                        items(s.downloads) { file ->
-                            val key = file.name
+                        if (s.availablePlatforms.size > 1 || s.availableLanguages.size > 1) {
+                            item {
+                                FilterChips(
+                                    platforms = s.availablePlatforms,
+                                    languages = s.availableLanguages,
+                                    platformFilter = s.platformFilter,
+                                    languageFilter = s.languageFilter,
+                                    onTogglePlatform = viewModel::togglePlatform,
+                                    onToggleLanguage = viewModel::toggleLanguage,
+                                )
+                            }
+                        }
+                        items(s.visibleGroups, key = { it.name }) { group ->
                             SelectableRow(
-                                title = file.name,
-                                subtitle = listOfNotNull(file.platform, file.language, formatSize(file.sizeBytes))
-                                    .joinToString(" · "),
-                                checked = key in s.selected,
-                                onToggle = { viewModel.toggle(key) },
+                                title = group.name,
+                                subtitle = groupSubtitle(group),
+                                checked = group.name in s.selected,
+                                onToggle = { viewModel.toggle(group.name) },
                             )
                         }
                     }
@@ -109,7 +123,7 @@ fun GameDetailScreen(
                             )
                         }
                     }
-                    if (s.downloads.isEmpty() && s.extras.isEmpty()) {
+                    if (s.groups.isEmpty() && s.extras.isEmpty()) {
                         item {
                             Text(
                                 text = stringResource(R.string.detail_no_files),
@@ -127,6 +141,54 @@ fun GameDetailScreen(
                 ) {
                     Text(stringResource(R.string.detail_download_selected, s.selected.size))
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun groupSubtitle(group: DownloadGroup): String {
+    val parts = buildList {
+        addAll(group.files.mapNotNull { it.platform }.distinct())
+        addAll(group.files.mapNotNull { it.language }.distinct())
+        add(formatSize(group.totalBytes))
+        if (group.files.size > 1) add(stringResource(R.string.detail_file_count, group.files.size))
+    }
+    return parts.joinToString(" · ")
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun FilterChips(
+    platforms: List<String>,
+    languages: List<String>,
+    platformFilter: Set<String>,
+    languageFilter: Set<String>,
+    onTogglePlatform: (String) -> Unit,
+    onToggleLanguage: (String) -> Unit,
+) {
+    FlowRow(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        if (platforms.size > 1) {
+            platforms.forEach { platform ->
+                FilterChip(
+                    selected = platform in platformFilter,
+                    onClick = { onTogglePlatform(platform) },
+                    label = { Text(platform) },
+                )
+            }
+        }
+        if (languages.size > 1) {
+            languages.forEach { language ->
+                FilterChip(
+                    selected = language in languageFilter,
+                    onClick = { onToggleLanguage(language) },
+                    label = { Text(language) },
+                )
             }
         }
     }

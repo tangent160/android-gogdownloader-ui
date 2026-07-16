@@ -38,10 +38,21 @@
 
     <string name="library_title">Your games</string>
     <string name="library_empty">No games found. Try refreshing the library.</string>
+    <string name="library_no_matches">No games match your search.</string>
+    <string name="search">Search library</string>
+    <string name="search_hint">Search games…</string>
+    <string name="close_search">Close search</string>
+    <string name="clear_search">Clear search</string>
+    <string name="sort">Sort library</string>
+    <string name="sort_title_asc">Title A–Z</string>
+    <string name="sort_title_desc">Title Z–A</string>
+    <string name="sort_recent">Recently added</string>
+    <string name="sort_size">Total size</string>
 
     <string name="detail_installers">Installers</string>
     <string name="detail_include_extras">Include extras</string>
     <string name="detail_extras_count">%1$d extra files (artwork, soundtracks, manuals…)</string>
+    <string name="detail_file_count">%1$d files</string>
     <string name="detail_no_files">This game has no downloadable files. Try refreshing the library.</string>
     <string name="detail_download_selected">Download selected (%1$d)</string>
 
@@ -71,4 +82,21 @@
     <string name="settings_incremental_sync">Check for updates</string>
     <string name="settings_full_resync_explanation">A full re-sync re-downloads details for every game in your library and can take a long time.</string>
     <string name="settings_full_resync">Full re-sync</string>
+    <string name="settings_backup_title">Backup</string>
+    <string name="settings_backup_explanation">The database holds your GOG login and the synced library. Export it to back up or move to another device.</string>
+    <string name="settings_backup_export">Export database</string>
+    <string name="settings_backup_import">Import database</string>
+    <string name="settings_backup_import_confirm_title">Import database?</string>
+    <string name="settings_backup_import_confirm_text">This replaces your current library and login with the backup. Continue?</string>
+    <string name="settings_backup_import_confirm_ok">Import</string>
+    <string name="cancel">Cancel</string>
+    <string name="settings_backup_export_done">Database exported.</string>
+    <string name="settings_backup_import_done">Database imported.</string>
+    <string name="settings_backup_nothing">Nothing to export yet — the database does not exist.</string>
+    <string name="settings_backup_busy">Cannot import while a sync or download is running.</string>
+    <string name="settings_backup_invalid">Not a valid gog-downloader database.</string>
+    <string name="settings_backup_failed">Backup operation failed.</string>
+    <string name="settings_backup_no_auth">The imported database has no saved login. Your library was restored — log in above to continue.</string>
+    <string name="login_import_explanation">Already have a backup? Restore an exported database instead of logging in.</string>
+    <string name="login_import_button">Import database backup</string>
 </resources>
