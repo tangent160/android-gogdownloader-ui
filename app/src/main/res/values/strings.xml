@@ -78,6 +78,8 @@
     <string name="settings_storage_explanation">To save downloads outside the app folder, grant access to all files. Without it, downloads only work in the app-specific folder.</string>
     <string name="settings_storage_grant">Grant storage access</string>
     <string name="settings_library_title">Library</string>
+    <string name="settings_include_hidden">Include hidden games</string>
+    <string name="settings_include_hidden_explanation">Also fetch games you have hidden in your GOG library on every update.</string>
     <string name="settings_incremental_explanation">Check for updates fetches games that are new or that GOG marks as updated (update-database --updated-only). Note: any owned game missing from the local database counts as new.</string>
     <string name="settings_incremental_sync">Check for updates</string>
     <string name="settings_full_resync_explanation">A full re-sync re-downloads details for every game in your library and can take a long time.</string>

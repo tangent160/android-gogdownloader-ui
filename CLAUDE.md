@@ -95,6 +95,9 @@ the status bar / camera cutout and navigation bar. New screens follow one of the
 - `--os`/`--language` filter each game's installer list, then games with zero remaining
   installers are dropped *including their extras* — never pass these flags on an extras-only
   (`--no-games`) job.
+- `update-database` skips games hidden on GOG unless `--include-hidden` is passed. The
+  `Settings.includeHidden` toggle appends it to every sync mode (`GogCli.updateDatabase`); it only
+  affects what future syncs fetch — turning it off never removes already-synced hidden games.
 - `update-database --updated-only` also fetches every owned game *missing* from the local DB. That
   is why `Settings.librarySyncMode` exists: after a `--search` sync, automatic/incremental updates
   are disabled (they would silently fetch the whole library). Nothing may trigger a full update

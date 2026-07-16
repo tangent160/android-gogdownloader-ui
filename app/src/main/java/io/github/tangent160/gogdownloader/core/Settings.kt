@@ -1,6 +1,7 @@
 package io.github.tangent160.gogdownloader.core
 
 import android.content.Context
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -45,6 +46,19 @@ class Settings(private val context: Context) {
 
     suspend fun setLibrarySyncMode(mode: String) {
         context.dataStore.edit { prefs -> prefs[librarySyncModeKey] = mode }
+    }
+
+    private val includeHiddenKey = booleanPreferencesKey("include_hidden")
+
+    /** Whether `update-database` runs pass --include-hidden (fetch games hidden on GOG). */
+    val includeHidden: Flow<Boolean> = context.dataStore.data.map { prefs ->
+        prefs[includeHiddenKey] ?: false
+    }
+
+    suspend fun currentIncludeHidden(): Boolean = includeHidden.first()
+
+    suspend fun setIncludeHidden(value: Boolean) {
+        context.dataStore.edit { prefs -> prefs[includeHiddenKey] = value }
     }
 
     private val librarySortKey = stringPreferencesKey("library_sort")

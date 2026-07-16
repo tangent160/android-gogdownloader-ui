@@ -45,7 +45,9 @@ The APK lands in `app/build/outputs/apk/debug/app-debug.apk`.
    logging in you land on a blank page. Copy its address, paste it into the
    app, and it runs `code-login` for you. Alternatively, import a database
    backup exported from another install to skip logging in.
-2. **Sync** — the app runs `update-database` to fetch your library.
+2. **Sync** — the app runs `update-database` to fetch your library. A
+   Settings toggle ("Include hidden games") adds `--include-hidden` to every
+   update, so games hidden in your GOG library are fetched too.
 3. **Library** — a grid of game covers, searchable from the app bar and
    sortable by title, recently added, or total size (the sort choice is
    remembered). Tap a game to see its installers and

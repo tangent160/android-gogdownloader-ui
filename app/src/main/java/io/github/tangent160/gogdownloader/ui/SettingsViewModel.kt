@@ -19,6 +19,12 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch { settings.setDownloadDir(path) }
     }
 
+    val includeHidden: Flow<Boolean> = settings.includeHidden
+
+    fun setIncludeHidden(value: Boolean) {
+        viewModelScope.launch { settings.setIncludeHidden(value) }
+    }
+
     /** Copies the CLI's database out to a user-chosen document. */
     fun exportDatabase(uri: Uri, onResult: (Int) -> Unit) {
         viewModelScope.launch { onResult(DatabaseBackup.export(getApplication(), uri)) }

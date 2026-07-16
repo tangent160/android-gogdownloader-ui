@@ -113,9 +113,16 @@ class GogCli(context: Context) {
      * [SyncMode.Incremental] (--updated-only) also matches games not yet in
      * the local database.
      */
-    suspend fun updateDatabase(mode: SyncMode, onLine: (String) -> Unit): Result = when (mode) {
-        is SyncMode.Full -> run("update-database", onLine = onLine)
-        is SyncMode.Incremental -> run("update-database", "--updated-only", onLine = onLine)
-        is SyncMode.Search -> run("update-database", "--search=${mode.query}", onLine = onLine)
+    suspend fun updateDatabase(mode: SyncMode, includeHidden: Boolean, onLine: (String) -> Unit): Result {
+        val args = buildList {
+            add("update-database")
+            when (mode) {
+                is SyncMode.Full -> {}
+                is SyncMode.Incremental -> add("--updated-only")
+                is SyncMode.Search -> add("--search=${mode.query}")
+            }
+            if (includeHidden) add("--include-hidden")
+        }
+        return run(*args.toTypedArray(), onLine = onLine)
     }
 }

@@ -82,8 +82,9 @@ class SyncService : Service() {
                 is SyncMode.Search -> app.settings.setLibrarySyncMode(Settings.SYNC_MODE_SEARCH)
                 is SyncMode.Incremental -> {}
             }
+            val includeHidden = app.settings.currentIncludeHidden()
             val result = runCatching {
-                app.gogCli.updateDatabase(mode) { line ->
+                app.gogCli.updateDatabase(mode, includeHidden) { line ->
                     parseProgress(line)?.let { SyncMonitor.update(it) }
                 }
             }.getOrNull()
